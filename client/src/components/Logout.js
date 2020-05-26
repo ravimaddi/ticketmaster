@@ -1,8 +1,8 @@
 import React from 'react'
 
-class Logout extends React.Component{
-    render(){
-        return(
+class Logout extends React.Component {
+    render() {
+        return (
             <h1>Logout</h1>
         )
     }
