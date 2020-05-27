@@ -17,7 +17,6 @@ class TicketList extends React.Component {
             dptList: [],
             custList: [],
             empList: []
-
         }
         this.data = {
             ticketList: [],
@@ -25,7 +24,6 @@ class TicketList extends React.Component {
         }
 
     }
-
     componentDidMount() {
         const p1 = axios.get('https://dct-ticket-master.herokuapp.com/tickets', {
             headers: {
@@ -60,56 +58,26 @@ class TicketList extends React.Component {
         })
     }
     handleStatus = (e, id) => {
-        if (e.target.checked) {
-            const ticket = this.state.ticketList.find((t) => { return t._id === id })
-            ticket.isResolved = true
-            axios.put(`https://dct-ticket-master.herokuapp.com/tickets/${ticket._id}`, ticket, {
-                headers: {
-                    'x-auth': localStorage.getItem('authToken')
-                }
+        axios.put(`https://dct-ticket-master.herokuapp.com/tickets/${id}`, { isResolved: e.target.checked }, {
+            headers: {
+                'x-auth': localStorage.getItem('authToken')
+            }
+        })
+            .then((response) => {
+                const ticketList = this.state.ticketList.map((t) => {
+                    if (t._id === response.data._id) {
+                        t.isResolved = response.data.isResolved
+                        return t
+                    }
+                    else {
+                        return t
+                    }
+                })
+                this.setState({ ticketList })
             })
-                .then(() => {
-                    axios.get('https://dct-ticket-master.herokuapp.com/tickets', {
-                        headers: {
-                            'x-auth': localStorage.getItem('authToken')
-                        }
-                    }).then((response) => {
-                        const ticketList = response.data
-                        this.setState({ ticketList: ticketList })
-                    })
-                        .catch((err) => {
-                            alert(err)
-                        })
-                })
-                .catch((err) => {
-                    alert(err)
-                })
-        }
-        else {
-            const ticket = this.state.ticketList.find((t) => { return t._id === id })
-            ticket.isResolved = false
-            axios.put(`https://dct-ticket-master.herokuapp.com/tickets/${ticket._id}`, ticket, {
-                headers: {
-                    'x-auth': localStorage.getItem('authToken')
-                }
+            .catch((err) => {
+                alert(err)
             })
-                .then(() => {
-                    axios.get('https://dct-ticket-master.herokuapp.com/tickets', {
-                        headers: {
-                            'x-auth': localStorage.getItem('authToken')
-                        }
-                    }).then((response) => {
-                        const ticketList = response.data
-                        this.setState({ ticketList: ticketList })
-                    })
-                        .catch((err) => {
-                            alert(err)
-                        })
-                })
-                .catch((err) => {
-                    alert(err)
-                })
-        }
     }
     getTicketList = () => {
         axios.get('https://dct-ticket-master.herokuapp.com/tickets', {
